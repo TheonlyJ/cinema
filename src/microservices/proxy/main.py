@@ -1,11 +1,9 @@
 import http.client
 import os
 import random
-from typing import List
 
 import fastapi
 import requests
-from pydantic import BaseModel
 
 monolith_url = os.environ.get('MONOLITH_URL')
 movies_url = os.environ.get('MOVIES_SERVICE_URL')
@@ -26,19 +24,13 @@ def select_backend():
 
 
 @app.get("/api/movies")
-async def get_movies(id: int = None):
+async def get_movies():
     backend_url = select_backend()
-    response = requests.get(backend_url+'/api/movies', params={'id': id})
+    response = requests.get(backend_url+'/api/movies')
     return response.json()
 
-class Movie(BaseModel):
-    title: str
-    description: str
-    genres: List[str]
-    rating: float
-
 @app.post("/api/movies")
-async def post_movies(item: Movie):
+async def post_movies(item):
     backend_url = select_backend()
     response = requests.post(backend_url+'/api/movies', data=item)
     return response.json()
