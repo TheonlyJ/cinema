@@ -1,0 +1,96 @@
+@startuml
+title CinemaAbyss Containers Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+skinparam linetype polyline
+skinparam linetype ortho
+
+
+Person(mobile_user, "Пользователь", "Мобильный пользователь")
+Person(desktop_user, "Пользователь", "Пользователь с ПК")
+Person(tv_user, "Пользователь", "Пользователь c Smart TV")
+
+System_Ext(payment_gateway, "Платежный шлюз", "Принимает платежи")
+System_Ext(external_streaming, "Онлайн-кинотеатры", "Предоставляет контент")
+System_Ext(recommender_system, "Рекомендательная система", "Предоставляет рекомендации на основе данных о пользователе")
+
+System_Boundary(c1, "Система") {
+Container(mobile_app_android, "Мобильное приложение Android", "Kotlin")
+Container(mobile_app_ios, "Мобильное приложение IOS", "Swift")
+Container(web_app, "Веб приложение", "JS")
+Container(smart_tv_app, "Приложение для Smart TV", "Kotlin")
+
+Container(bff_android, "BfF для Android-приложения", "Go")
+Container(bff_ios, "BfF для IOS-приложения", "Go")
+Container(bff_web, "BfF для web-приложения", "Go")
+Container(bff_tv, "BfF для TV-приложения", "Go")
+
+Container(movies_service, "Сервис фильмов", "Go")
+ContainerDb(movies_db, "БД метаданных фильмов и ссылок на них", "PostgreSQL")
+
+Container(payment_service, "Сервис платежей", "Go")
+ContainerDb(payment_db, "БД платежей", "PostgreSQL")
+
+Container(auth_service, "Сервис авторизации", "Go")
+ContainerDb(auth_service_db, "БД пользователей", "PostgreSQL")
+
+Container(user_prefs_service, "Сервис пользовательских предпочтений", "Go")
+ContainerDb(user_prefs_db, "БД оценок и ревью", "ElasticSearch")
+
+Container(subscriptions_service, "Сервис управления подписками", "Go")
+ContainerDb(subscriptions_db, "БД подписок", "PostgreSQL")
+
+Container(recommendation_service, "Сервис рекомендаций", "Go")
+
+}
+
+Rel(mobile_user, mobile_app_android, "Использует")
+Rel(mobile_user, mobile_app_ios, "Использует")
+Rel(desktop_user, web_app, "Использует")
+Rel(tv_user, smart_tv_app, "Использует")
+
+Rel(mobile_app_android, bff_android, "Запрашивает")
+Rel(mobile_app_ios, bff_ios, "Запрашивает")
+Rel(web_app, bff_web, "Запрашивает")
+Rel(smart_tv_app, bff_tv, "Запрашивает")
+
+Rel(bff_android, movies_service,'')
+Rel(bff_android, payment_service,'')
+Rel(bff_android, auth_service,'')
+Rel(bff_android, user_prefs_service,'')
+Rel(bff_android, subscriptions_service,'')
+Rel(bff_android, recommendation_service,'')
+
+Rel(bff_ios, movies_service,'')
+Rel(bff_ios, payment_service,'')
+Rel(bff_ios, auth_service,'')
+Rel(bff_ios, user_prefs_service,'')
+Rel(bff_ios, subscriptions_service,'')
+Rel(bff_ios, recommendation_service,'')
+
+Rel(bff_web, movies_service,'')
+Rel(bff_web, payment_service,'')
+Rel(bff_web, auth_service,'')
+Rel(bff_web, user_prefs_service,'')
+Rel(bff_web, subscriptions_service,'')
+Rel(bff_web, recommendation_service,'')
+
+Rel(bff_tv, movies_service,'')
+Rel(bff_tv, payment_service,'')
+Rel(bff_tv, auth_service,'')
+Rel(bff_tv, user_prefs_service,'')
+Rel(bff_tv, subscriptions_service,'')
+Rel(bff_tv, recommendation_service,'')
+
+Rel(movies_service, movies_db, "Хранит данные")
+Rel(payment_service, payment_db, "Хранит данные")
+Rel(auth_service, auth_service_db, "Хранит данные")
+Rel(user_prefs_service, user_prefs_db, "Хранит данные")
+Rel(subscriptions_service, subscriptions_db, "Хранит данные")
+
+Rel(recommendation_service, recommender_system, "Использует")
+Rel(movies_service, external_streaming, "Использует")
+Rel(payment_service, payment_gateway, "Использует")
+@enduml
