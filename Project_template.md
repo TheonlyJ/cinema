@@ -5,7 +5,13 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+
+Я использовал паттерн BFF, а не API Gateway потому что проект поддерживает несколько разных фронтендов, которые, вероятно, будут разрабатываться сторонними разработчиками, т.к. у внутренней команды нет нужной экспертизы.
+К тому же, под капотом BFF это по сути маленький гейтвей.
+
+[PUML](diagrams/cinemaabyss container.puml)
+
+![PNG](diagrams/cinemaabyss container.png)
 
 # Задание 2
 
@@ -59,6 +65,12 @@
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
 Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
 
+![tests](screenshots/tests.png)
+
+![logs](screenshots/event_logs.png)
+
+![topics](screenshots/kafka_ui.png)
+
 # Задание 3
 
 Команда начала переезд в Kubernetes для лучшего масштабирования и повышения надежности. 
@@ -69,7 +81,7 @@
 
 ### CI/CD
 
- В папке .github/worflows доработайте деплой новых сервисов proxy и events в docker-build-push.yml , чтобы api-tests при сборке отрабатывали корректно при отправке коммита в ваш репозиторий.
+ В папке .github/worfklows доработайте деплой новых сервисов proxy и events в docker-build-push.yml , чтобы api-tests при сборке отрабатывали корректно при отправке коммита в ваш репозиторий.
 
 Нужно доработать 
 ```yaml
@@ -275,6 +287,9 @@ cat .docker/config.json | base64
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
 
+![kube_events](/screenshots/kube_events.png)
+
+![kube_movies](/screenshots/kube_movies.png)
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 
@@ -349,6 +364,11 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies
 и приложите скриншот развертывания helm и вывода https://cinemaabyss.example.com/api/movies
+
+
+![helm](/screenshots/helm.png)
+
+![movies](/screenshots/helm_movies.png)
 
 ## Удаляем все
 
