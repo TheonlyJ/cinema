@@ -4,8 +4,9 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from typing import Optional, List
-
-import fastapi
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 import pydantic
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
@@ -15,14 +16,23 @@ broker = os.environ.get("KAFKA_BROKERS")
 
 
 @asynccontextmanager
-async def lifespan(app: fastapi.FastAPI):
+async def lifespan(app: FastAPI):
     thr = threading.Thread(target=consume)
     thr.start()
     yield
     thr.join()
 
 
-app = fastapi.FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+    print(f"{request}: {exc_str}")
+    content = {'status_code': 10422, 'message': exc_str, 'data': None}
+    return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 @app.get("/api/events/health", status_code=200)
 async def health():
